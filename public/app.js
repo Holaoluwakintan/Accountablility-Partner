@@ -216,7 +216,7 @@ function viewNew() {
     (NEW.measure === 'quantity' ? '<div class="row" style="margin-top:10px"><input id="tv" type="number" inputmode="decimal" min="1" style="max-width:110px" value="' + esc(NEW.tv || 10) + '" aria-label="Target amount"><input id="tu" maxlength="24" value="' + esc(NEW.tu || 'pages') + '" aria-label="Unit"></div>' : '') +
     '<label>Which days?</label><div class="chips">' + dayChips + '</div>' +
     '<label for="ct">Check-in time</label><input id="ct" type="time" value="' + esc(NEW.time || '20:00') + '">' +
-    '<div class="hint">Pick a time you are usually free. Reminders never show your goal on the lock screen.</div>' +
+    '<div class="hint">Pick a time you are usually free. The app does not send reminders yet, so set a phone alarm for this time and check in when it rings.</div>' +
     '<div style="margin-top:20px"><button class="btn-block" data-act="nc-save">I commit</button></div></div>');
 }
 function ncRead() {
@@ -228,12 +228,13 @@ async function ncSave(btn) {
   ncRead();
   if (!NEW.title.trim()) { toast('Give your commitment a short title.'); return; }
   if (!NEW.days.length) { toast('Choose at least one day.'); return; }
+  if (!NEW.cat) NEW.cat = 'custom';   /* a page refresh on the form loses the picked area; save it as 'Something else' instead of failing */
   var c = cat(NEW.cat);
   var row = { title: NEW.title.trim(), why: NEW.why.trim() || null, category_slug: NEW.cat, kind: c.family === 'other' ? (NEW.family || 'start') : c.family,
     measure: NEW.measure === 'quantity' ? 'quantity' : 'binary', target_value: NEW.measure === 'quantity' ? Math.max(1, +NEW.tv || 1) : null,
     target_unit: NEW.measure === 'quantity' ? (NEW.tu || '').trim().slice(0, 24) || null : null, days: NEW.days.slice().sort(), checkin_time: NEW.time || '20:00',
     start_date: localDate(), user_id: APP.user.id };
-  if (row.kind === 'other') row.kind = 'start';
+  if (row.kind === 'other' || !row.kind) row.kind = 'start';
   btn.disabled = true;
   var r = await sb.from('ap_commitments').insert(row).select().single();
   btn.disabled = false;

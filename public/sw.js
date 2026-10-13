@@ -1,6 +1,6 @@
 /* Accountability Partner service worker: app shell offline, network for data. */
-var V = 'ap-__V__';
-var SHELL = ['/', '/index.html', '/styles.css?v=__V__', '/app.js?v=__V__', '/vendor/supabase.js', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png'];
+var V = 'ap-1791999999';
+var SHELL = ['/', '/index.html', '/styles.css?v=1791999999', '/app.js?v=1791999999', '/vendor/supabase.js', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png'];
 self.addEventListener('install', function (e) { e.waitUntil(caches.open(V).then(function (c) { return c.addAll(SHELL); }).then(function () { return self.skipWaiting(); })); });
 self.addEventListener('activate', function (e) { e.waitUntil(caches.keys().then(function (ks) { return Promise.all(ks.filter(function (k) { return k !== V; }).map(function (k) { return caches.delete(k); })); }).then(function () { return self.clients.claim(); })); });
 self.addEventListener('fetch', function (e) {
